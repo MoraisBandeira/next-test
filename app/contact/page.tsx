@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-export function TextName(props: { name?: string; label?: string; placeholder?: string }) {
+export function TextName(props: { name?: string; label?: string; placeholder?: string;}) {
   const [value, setValue] = useState('');
   const [error, setError] = useState('');
 
@@ -23,23 +23,189 @@ export function TextName(props: { name?: string; label?: string; placeholder?: s
         placeholder={props.placeholder}
         value={value}
         onChange={handleChange}
+        required={true}
         className={`input ${error ? 'border-red-500 focus:ring-red-500' : ''}`}
       />
       {error && <span className="text-xs text-red-500">{error}</span>}
     </div>
   );
 }
+export function EmailField(props: { name?: string; label?: string; placeholder?: string;}) {
+  return (
+    <div className="flex flex-col gap-1">
+      <label htmlFor={props.name} className="text-sm font-medium">{props.label}</label>
+      <input
+        id={props.name}
+        name={props.name}
+        type="email"
+        placeholder={props.placeholder}
+        required={true}
+        className="input"
+      />
+    </div>
+  );
+}
+export function PasswordField(props: { name?: string; label?: string; placeholder?: string;}) {
+  const [value, setValue] = useState('');
+  const [errors, setErrors] = useState<string[]>([]);
+
+  function validate(password: string): string[] {
+    const errs: string[] = [];
+    if (password.length < 8) errs.push('Mínimo de 8 caracteres.');
+    if (!/[0-9]/.test(password)) errs.push('Deve conter pelo menos um número.');
+    if (!/[^a-zA-Z0-9]/.test(password)) errs.push('Deve conter pelo menos um caractere especial.');
+    return errs;
+  }
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const raw = e.target.value;
+    setValue(raw);
+    setErrors(raw ? validate(raw) : []);
+  }
+
+  return (
+    <div className="flex flex-col gap-1">
+      <label htmlFor={props.name} className="text-sm font-medium">{props.label}</label>
+      <input
+        id={props.name}
+        name={props.name}
+        type="password"
+        placeholder={props.placeholder}
+        value={value}
+        onChange={handleChange}
+        required={true}
+        className={`input ${errors.length ? 'border-red-500 focus:ring-red-500' : ''}`}
+      />
+      {errors.map((err) => (
+        <span key={err} className="text-xs text-red-500">{err}</span>
+      ))}
+    </div>
+  );
+}
+export function SelectField(props: {
+  name?: string;
+  label?: string;
+  options: { value: string; label: string }[];
+  onChange?: (value: string) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-1">
+      <label htmlFor={props.name} className="text-sm font-medium">{props.label}</label>
+      <select
+        id={props.name}
+        name={props.name}
+        required={true}
+        className="input"
+        onChange={(e) => props.onChange?.(e.target.value)}
+      >
+        <option value="">Selecione...</option>
+        {props.options.map((opt) => (
+          <option key={opt.value} value={opt.value}>{opt.label}</option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
+
+export function RadioGroup(props: {
+  legend: string;
+  name: string;
+  options: string[];
+  onChange?: (value: string) => void;
+}) {
+  return (
+    <fieldset className="flex flex-col gap-2">
+      <legend className="text-sm font-medium mb-1">{props.legend}</legend>
+      {props.options.map((opt) => (
+        <label key={opt} className="flex items-center gap-2 text-sm cursor-pointer">
+          <input
+            type="radio"
+            name={props.name}
+            value={opt.toLowerCase()}
+            onChange={() => props.onChange?.(opt.toLowerCase())}
+            className="accent-blue-600"
+          />
+          {opt}
+        </label>
+      ))}
+    </fieldset>
+  );
+}
+
+export function CheckboxGroup(props: {
+  legend: string;
+  name: string;
+  options: { value: string; label: string }[];
+  onChange?: (selected: string[]) => void;
+}) {
+  const [selected, setSelected] = useState<string[]>([]);
+
+  function handleChange(value: string, checked: boolean) {
+    const next = checked ? [...selected, value] : selected.filter((v) => v !== value);
+    setSelected(next);
+    props.onChange?.(next);
+  }
+
+  return (
+    <fieldset className="flex flex-col gap-2">
+      <legend className="text-sm font-medium mb-1">{props.legend}</legend>
+      {props.options.map((opt) => (
+        <label key={opt.value} className="flex items-center gap-2 text-sm cursor-pointer">
+          <input
+            type="checkbox"
+            name={props.name}
+            value={opt.value}
+            checked={selected.includes(opt.value)}
+            onChange={(e) => handleChange(opt.value, e.target.checked)}
+            className="accent-blue-600"
+          />
+          {opt.label}
+        </label>
+      ))}
+    </fieldset>
+  );
+}
+
+export function TextareaField(props: { name: string; label: string; placeholder?: string; rows?: number }) {
+  return (
+    <div className="flex flex-col gap-1">
+      <label htmlFor={props.name} className="text-sm font-medium">{props.label}</label>
+      <textarea
+        id={props.name}
+        name={props.name}
+        rows={props.rows ?? 4}
+        placeholder={props.placeholder}
+        className="input resize-none"
+      />
+    </div>
+  );
+}
 
 export default function ContactPage() {
-  const [formData, setFormData] = useState<Record<string, string> | null>(null);
+  const [formData, setFormData] = useState<Record<string, string | string[]> | null>(null);
+  const [selectedField, setSelectedField] = useState('');
+  const [contactPref, setContactPref] = useState('');
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const data = new FormData(e.currentTarget);
-    const result: Record<string, string> = {};
-    data.forEach((value, key) => {
-      result[key] = value instanceof File ? value.name || '(nenhum arquivo)' : value;
+    const result: Record<string, string | string[]> = {};
+    const seen = new Set<string>();
+
+    data.forEach((_, key) => {
+      if (seen.has(key)) return;
+      seen.add(key);
+
+      const all = data.getAll(key);
+      if (all.length > 1) {
+        result[key] = all.map((v) => (v instanceof File ? v.name || '(nenhum arquivo)' : v));
+      } else {
+        const v = all[0];
+        result[key] = v instanceof File ? v.name || '(nenhum arquivo)' : v;
+      }
     });
+
     console.log('Dados do formulário:', result);
     setFormData(result);
   }
@@ -58,18 +224,10 @@ export default function ContactPage() {
           <TextName label="Nome" name="name" placeholder="Seu nome" />
 
           {/* email */}
-          <div className="flex flex-col gap-1">
-            <label htmlFor="email" className="text-sm font-medium">E-mail (email)</label>
-            <input id="email" name="email" type="email" placeholder="seu@email.com"
-              className="input" />
-          </div>
+          <EmailField label="E-mail" name="email" placeholder="seu@email.com" />
 
           {/* password */}
-          <div className="flex flex-col gap-1">
-            <label htmlFor="password" className="text-sm font-medium">Senha (password)</label>
-            <input id="password" name="password" type="password" placeholder="••••••••"
-              className="input" />
-          </div>
+          <PasswordField label="Senha" name="password" placeholder="••••••••" />
 
           {/* number */}
           <div className="flex flex-col gap-1">
@@ -113,46 +271,50 @@ export default function ContactPage() {
           </div>
 
           {/* select */}
-          <div className="flex flex-col gap-1">
-            <label htmlFor="subject" className="text-sm font-medium">Assunto (select)</label>
-            <select id="subject" name="subject" className="input">
-              <option value="">Selecione...</option>
-              <option value="support">Suporte</option>
-              <option value="sales">Vendas</option>
-              <option value="other">Outro</option>
-            </select>
-          </div>
+          <SelectField
+            label="switch de campos"
+            name="country"
+            options={[
+              { value: 'br', label: 'campo-1' },
+              { value: 'us', label: 'campo-2' },
+              { value: 'uk', label: 'campo-3' },
+            ]}
+            onChange={setSelectedField}
+          />
 
-          {/* radio */}
-          <fieldset className="flex flex-col gap-2">
-            <legend className="text-sm font-medium mb-1">Preferência de contato (radio)</legend>
-            {['E-mail', 'Telefone', 'WhatsApp'].map((opt) => (
-              <label key={opt} className="flex items-center gap-2 text-sm cursor-pointer">
-                <input type="radio" name="contact_pref" value={opt.toLowerCase()}
-                  className="accent-blue-600" />
-                {opt}
-              </label>
-            ))}
-          </fieldset>
+          {selectedField === 'br' && (
+            <>
+              <RadioGroup
+                legend="Preferência de contato (radio)"
+                name="contact_pref"
+                options={['E-mail', 'Telefone', 'WhatsApp']}
+                onChange={setContactPref}
+              />
+              {contactPref === 'whatsapp' && (
+                <TextName name="whatsapp" label="Número do WhatsApp" placeholder="(11) 99999-9999" />
+              )}
+            </>
+          )}
 
-          {/* checkbox */}
-          <fieldset className="flex flex-col gap-2">
-            <legend className="text-sm font-medium mb-1">Interesses (checkbox)</legend>
-            {['Design', 'Desenvolvimento', 'Marketing'].map((opt) => (
-              <label key={opt} className="flex items-center gap-2 text-sm cursor-pointer">
-                <input type="checkbox" name="interests" value={opt.toLowerCase()}
-                  className="accent-blue-600" />
-                {opt}
-              </label>
-            ))}
-          </fieldset>
+          {selectedField === 'us' && (
+            <CheckboxGroup
+              legend="Interesses (checkbox)"
+              name="interests"
+              options={[
+                { value: 'design', label: 'Design' },
+                { value: 'desenvolvimento', label: 'Desenvolvimento' },
+                { value: 'marketing', label: 'Marketing' },
+              ]}
+            />
+          )}
 
-          {/* textarea */}
-          <div className="flex flex-col gap-1">
-            <label htmlFor="message" className="text-sm font-medium">Mensagem (textarea)</label>
-            <textarea id="message" name="message" rows={4} placeholder="Escreva sua mensagem..."
-              className="input resize-none" />
-          </div>
+          {selectedField === 'uk' && (
+            <TextareaField
+              name="message"
+              label="Mensagem (textarea)"
+              placeholder="Escreva sua mensagem..."
+            />
+          )}
 
           {/* hidden */}
           <input type="hidden" name="source" value="contact-page" />
