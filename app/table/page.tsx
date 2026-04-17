@@ -196,7 +196,7 @@ export default function TablePage() {
             id: u.id,
             name: u.name,
             email: u.email,
-            role: u.role,
+            website: u.website,
           }))
         );
       })
@@ -252,7 +252,7 @@ export default function TablePage() {
                     <td className="px-4 py-3 text-gray-400">{row.id}</td>
                     <td className="px-4 py-3 font-medium">{row.name}</td>
                     <td className="px-4 py-3 text-gray-500">{row.email}</td>
-                    <td className="px-4 py-3 text-gray-500">{row.role}</td>
+                    <td className="px-4 py-3 text-gray-500">{row.website}</td>
                     <td className="px-4 py-3 text-right">
                       <button
                         onClick={() => setEditing(row)}
