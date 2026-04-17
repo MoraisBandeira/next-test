@@ -154,7 +154,7 @@ describe('SelectField', () => {
     expect(screen.getByRole('combobox')).toBeRequired();
   });
 
-  it('chama onChange com o valor selecionado', () => {
+  it('Deve chamar onChange com o valor selecionado Quando valor mudar', () => {
     const handleChange = jest.fn();
     render(<SelectField name="country" label="País" options={options} onChange={handleChange} />);
     fireEvent.change(screen.getByRole('combobox'), { target: { value: 'br' } });
@@ -203,20 +203,20 @@ describe('RadioGroup', () => {
 });
 
 describe('ContactPage — campo WhatsApp condicional', () => {
-  it('não exibe o campo WhatsApp antes de selecionar', () => {
+  it('não Deve exibir o campo WhatsApp antes de selecionar', () => {
     render(<ContactPage />);
     fireEvent.change(screen.getByRole('combobox'), { target: { value: 'br' } });
     expect(screen.queryByPlaceholderText(/99999-9999/i)).not.toBeInTheDocument();
   });
 
-  it('exibe o campo WhatsApp ao selecionar a opção WhatsApp', () => {
+  it('Deve exibir o campo WhatsApp Quando selecionar a opção WhatsApp', () => {
     render(<ContactPage />);
     fireEvent.change(screen.getByRole('combobox'), { target: { value: 'br' } });
     fireEvent.click(screen.getByDisplayValue('whatsapp'));
     expect(screen.getByPlaceholderText(/99999-9999/i)).toBeInTheDocument();
   });
 
-  it('oculta o campo WhatsApp ao trocar para outra opção', () => {
+  it('Deve oculta o campo WhatsApp Quando trocar para outra opção', () => {
     render(<ContactPage />);
     fireEvent.change(screen.getByRole('combobox'), { target: { value: 'br' } });
     fireEvent.click(screen.getByDisplayValue('whatsapp'));

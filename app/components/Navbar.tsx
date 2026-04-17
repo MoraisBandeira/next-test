@@ -13,8 +13,8 @@ export default function Navbar() {
           </Link>
         </li>
         <li>
-          <Link href="/about" className="hover:text-blue-600 transition-colors">
-            About
+          <Link href="/table" className="hover:text-blue-600 transition-colors">
+            Table
           </Link>
         </li>
         <li>
