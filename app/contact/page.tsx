@@ -291,7 +291,7 @@ export default function ContactPage() {
                 onChange={setContactPref}
               />
               {contactPref === 'whatsapp' && (
-                <TextName name="whatsapp" label="Número do WhatsApp" placeholder="(11) 99999-9999" />
+                <TextName name="whatsapp" label="Número do WhatsApp" placeholder="WhatsApp: (11) 99999-9999" />
               )}
             </>
           )}

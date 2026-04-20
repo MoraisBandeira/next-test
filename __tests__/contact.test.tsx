@@ -206,14 +206,14 @@ describe('ContactPage — campo WhatsApp condicional', () => {
   it('não Deve exibir o campo WhatsApp antes de selecionar', () => {
     render(<ContactPage />);
     fireEvent.change(screen.getByRole('combobox'), { target: { value: 'br' } });
-    expect(screen.queryByPlaceholderText(/99999-9999/i)).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText(/WhatsApp: \(11\) 99999-9999/i)).not.toBeInTheDocument();
   });
 
   it('Deve exibir o campo WhatsApp Quando selecionar a opção WhatsApp', () => {
     render(<ContactPage />);
     fireEvent.change(screen.getByRole('combobox'), { target: { value: 'br' } });
     fireEvent.click(screen.getByDisplayValue('whatsapp'));
-    expect(screen.getByPlaceholderText(/99999-9999/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/WhatsApp: \(11\) 99999-9999/i)).toBeInTheDocument();
   });
 
   it('Deve oculta o campo WhatsApp Quando trocar para outra opção', () => {
@@ -221,7 +221,7 @@ describe('ContactPage — campo WhatsApp condicional', () => {
     fireEvent.change(screen.getByRole('combobox'), { target: { value: 'br' } });
     fireEvent.click(screen.getByDisplayValue('whatsapp'));
     fireEvent.click(screen.getByDisplayValue('e-mail'));
-    expect(screen.queryByPlaceholderText(/99999-9999/i)).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText(/WhatsApp: \(11\) 99999-9999/i)).not.toBeInTheDocument();
   });
 });
 

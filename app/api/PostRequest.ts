@@ -1,6 +1,6 @@
 'server side'
 
-export async function PostRequest<T>(url:string, data:T) : Promise<string> {
+export default async function PostRequest<T>(url:string, data:T) : Promise<string> {
     const defaultUrl = 'https://jsonplaceholder.typicode.com/';
     const response = await fetch(`${defaultUrl}${url}`, {
         method: 'POST',
