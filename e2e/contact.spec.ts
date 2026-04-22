@@ -45,4 +45,6 @@ test('contact form', async ({ page }) => {
   await page.getByLabel('switch de campos').selectOption('br');
   await expect(page.getByText('Preferência de contato (radio)')).toBeVisible();
   await expect(page.getByText('Número do WhatsApp')).not.toBeVisible();
+  await page.getByText('WhatsApp').click();
+  await expect(page.getByText('Número do WhatsApp')).toBeVisible();
 });

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export function TextName(props: { name?: string; label?: string; placeholder?: string;}) {
   const [value, setValue] = useState('');
@@ -186,6 +186,10 @@ export default function ContactPage() {
   const [formData, setFormData] = useState<Record<string, string | string[]> | null>(null);
   const [selectedField, setSelectedField] = useState('');
   const [contactPref, setContactPref] = useState('');
+
+  useEffect(() => {
+    setContactPref('');
+  }, [selectedField]);
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
