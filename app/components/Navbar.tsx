@@ -22,6 +22,17 @@ export default function Navbar() {
             Contact
           </Link>
         </li>
+        <li>
+          <a
+            href="/api/download"
+            className="flex items-center gap-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 transition-colors"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3" />
+            </svg>
+            PDF
+          </a>
+        </li>
       </ul>
     </nav>
   );

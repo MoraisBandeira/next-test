@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('contact form', async ({ page }) => {
-  await page.goto('http://localhost:3001/');
+  await page.goto('/');
   await page.getByRole('link', { name: 'Contact' }).click();
   await expect(page.getByRole('textbox', { name: 'Nome' })).toBeEmpty();
   await expect(page.getByText('Nome')).toBeVisible();

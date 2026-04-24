@@ -9,3 +9,4 @@ test('renders get started text', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByText(/Get started by editing/i)).toBeVisible();
 });
+ 
