@@ -1,6 +1,8 @@
 import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import { cookies } from 'next/headers';
+import { verifyToken } from '@/lib/auth';
 import Navbar from './components/Navbar';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -25,15 +27,19 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const cookieStore = await cookies();
+  const token = cookieStore.get('token')?.value;
+  const user = token ? await verifyToken(token) : null;
+
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Navbar />
+        {user && <Navbar />}
         {children}
       </body>
     </html>
